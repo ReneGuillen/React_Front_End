@@ -1,7 +1,7 @@
 import React from 'react';
 import './Coin.css';
 
-
+//Js to render all coins from the API request.
 const Coin = ({
   name,
   price,
