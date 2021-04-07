@@ -2,7 +2,7 @@
 import React from 'react';
 import './FavCoin.css';
 
-
+//Js to render favarite coins from database user's table.
 const FavCoin = ({
   name,
   price,
