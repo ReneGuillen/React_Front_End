@@ -7,31 +7,15 @@ import FavCoin from './FavCoin';
 import { RiAddCircleFill, RiCloseCircleFill, RiContactsBookLine} from 'react-icons/ri';
 import {AiFillGithub, AiOutlineGithub, AiFillStar} from 'react-icons/ai';
 
-
+//Retrieves crypto-coins from gecko API and connects to the back end / database.
 function App() {
-  const [newUser, setNewUser] = useState('');
-
-  useEffect(() => {
-    axios.get('https://cryptocurrency-watcher.herokuapp.com/addUser'
-    ).then(res => {
-      setNewUser(res.data);
-    }).catch(error => console.log(error));
-  })
-
-
+  
   const [search, setSearch] = useState('')
   const [user, username] = useState([])
   const [coins, setCoins] = useState([]);
   const [favCoins, setFavCoins] = useState([]);
-  const [userLogin, setUserLogin] = useState('')
 
-  useEffect(() => {
-    axios.get('https://cryptocurrency-watcher.herokuapp.com/getUser'
-    ).then(res => {
-      setUserLogin(res.data);
-    }).catch(error => console.log(error));
-  })
-
+  //API get request to get all coins from gecko site up to 50 per page.
   useEffect(() =>{
     axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false'
     ).then(res => {
@@ -39,44 +23,25 @@ function App() {
     }).catch(error => console.log(error));
   }, []);
 
+  //Call back-end to get all coins from user's list on database.
   useEffect(() =>{
-    axios.get('https://cryptocurrency-watcher.herokuapp.com/showStocks'
+    axios.get('https://cryptocurrency-watcher.herokuapp.com/showCoins'
     ).then(res => {
       username(res.data);
     }).catch(error => console.log(error));
   }, []);
 
-  const coinSet = new Set();
-
-  for(let i = 0; i < user.length; i++){
-    if(user[i] != ""){
-      coinSet.add(user[i]);
-    } 
-  }
-
-  for(let i = 0; i < coins.length; i++){
-    let object = coins[i];
-    if(coinSet.has(object.name)){
-      const newArray = coins.filter((coin) => coin.name !== object.name);
-      setCoins(newArray);
-      setFavCoins(favCoins.concat(object));
-    }
-  }
-
-
+  //Set search imput to new react state.
   const handleChange = e => {
     setSearch(e.target.value)
   }
 
+  //Filter coins based on user input search using react state.
   const filteredCoins = coins.filter(coin => 
     coin.name.toLowerCase().includes(search.toLowerCase())
     )
 
-  const filCoins = favCoins.filter(coin => 
-    coin.name.toLowerCase().includes(search.toLowerCase())
-    )
-
-
+  //Method to add coin to fav list using react stated.
   const addCoin = coinObj => {
     axios.get('https://cryptocurrency-watcher.herokuapp.com/addStock?stock=' + coinObj.name);
     const newArray = coins.filter((coin) => coin.name !== coinObj.name);
@@ -85,6 +50,7 @@ function App() {
     setFavCoins(newArray2);
   }
 
+  //Method to remove coin from fav list using react state.
   const removeCoin = coinObj => {
     axios.get('https://cryptocurrency-watcher.herokuapp.com/deleteStock?stock=' + coinObj.name);
     const dblist = user.filter((item) => item !== coinObj.name);
@@ -113,7 +79,7 @@ function App() {
         </div>
         <AiFillStar className="star-icon" size="35px" color="yellow"></AiFillStar>
         <div className="favorite-list">
-          {favCoins.length <= 0 ? (
+          {filteredCoins.length <= 0 ? (
                 <h1 className="fav-txt">Add coins to your fav list! : )</h1>
                 ) : (filCoins.map(coin => {
                   return (
