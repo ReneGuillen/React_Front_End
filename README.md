@@ -7,3 +7,5 @@ API Source: https://www.coingecko.com/en
 
 ## Demo:
 https://cryptocurrency-watcher.herokuapp.com/
+
+1
